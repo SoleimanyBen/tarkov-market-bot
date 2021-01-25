@@ -1,13 +1,8 @@
 import { Message as DiscordMessage } from 'discord.js'
 
-export default class Price {
-    command: string
+import Command from '../../core/command'
 
-
-    constructor(command: string) {
-        this.command = command
-    }
-
+export default class Price extends Command {
     run(): Promise<void> {
         throw new Error('Method not implemented.');
     }

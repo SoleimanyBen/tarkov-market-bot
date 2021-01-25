@@ -1,35 +1,46 @@
-import { Client as DiscordClient, Message as DiscordMessage } from 'discord.js'
+import fs from 'fs'
+import path from 'path'
 
-import IBot from '../interfaces/ibot'
+import { Client, Message as DiscordMessage } from 'discord.js'
 
-export default class Bot implements IBot 
+import Message from './message'
+import Command from './command'
+
+export default class Bot
 {
-    client: DiscordClient
+    private client: Client
+    private commands?: Command[]
 
-    constructor(apiKey: string) 
+    constructor(apiKey?: string) 
     {
-        this.client = new DiscordClient()
+        this.client = new Client()
 
-        this.client.login(apiKey)
+        // this.client.login()
     }
 
     public async start(): Promise<void>
     {
-        this.handleEvents()
+        await this.handleEvents()
+        await this.handleCommands()
     }
 
     private async handleEvents(): Promise<void> 
     {
-        this.client.on('message', this.onMessage.bind(this))
+        // this.client.on('message', this.onMessage.bind(this))
     }
 
-    private registerCommands(): void 
+    private async handleCommands(): Promise<void> 
     {
-        
+        const modulesList: string[] = fs.readdirSync(path.join(__dirname, '../commands/'))
+
+        for (let moduleData in modulesList)
+        {
+
+        }
     }
 
     private onMessage(discordMessage: DiscordMessage): void
     {
-        
+        const message: Message = new Message(discordMessage)
     }
 }

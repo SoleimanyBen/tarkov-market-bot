@@ -6,16 +6,20 @@ import TarkovMarket from "./libs/tarkovmarket/tarkov-market"
 require('dotenv').config()
 
 
-async function test() {
-    const tarkovMarket = new TarkovMarket()
+async function start() {
+    // const tarkovMarket = new TarkovMarket()
 
-    await tarkovMarket.getItemData()
+    // await tarkovMarket.getItemData()
 
-    for (;;) {
-        const ans: any = await testEntry()
+    // for (;;) {
+    //     const ans: any = await testEntry()
 
-        tarkovMarket.getItemByName(ans)
-    }
+    //     tarkovMarket.getItemByName(ans)
+    // }
+
+    const bot: Bot = new Bot()
+
+    await bot.start()
 }
 
 
@@ -31,4 +35,4 @@ function testEntry() {
     }))
 }
 
-test()
+start()
