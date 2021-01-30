@@ -2,14 +2,18 @@ import got, { Got } from 'got'
 import { isIterationStatement } from 'typescript'
 
 import IBSGItem from './interfaces/ibsgitem'
-import IItem from './interfaces/iitem'
+import ITarkovItem from './interfaces/itarkovitem'
 
 export default class TarkovMarket {
-    items: IItem[] = []
+    private static _instance?: TarkovMarket
 
-    httpClient: Got
+    private items: ITarkovItem[] = []
+    private httpClient: Got
 
-    constructor() {
+    public lastRefreshDate?: Date
+
+    constructor() 
+    {
         this.httpClient = got.extend({
             prefixUrl: 'https://tarkov-market.com',
             responseType: 'json',
@@ -19,13 +23,20 @@ export default class TarkovMarket {
         })
     }
 
-    async getItemData(): Promise<void> {
-        try {
+    public static get Instance(): TarkovMarket
+    {
+        return this._instance || (this._instance = new this())
+    }
+
+    public async refreshItemData(): Promise<void> 
+    {
+        try 
+        {
             const rawBsgItems: any = await this.httpClient('api/v1/bsg/items/all')
             const rawMarketItems: any = await this.httpClient('api/v1/items/all')
 
             rawMarketItems.body.forEach((data: any) => {
-                const item: IItem = {
+                const item: ITarkovItem = {
                     uid: data.uid,
                     name: data.name,
                     shortName: data.shortName,
@@ -68,39 +79,38 @@ export default class TarkovMarket {
 
                 this.items.push(item)
             })
-        } catch(e) {
+
+            console.log("Tarkov Items API Loaded")
+        } 
+        catch(e) 
+        {
             console.log(e)
         }
     }
 
-    async getItemByName(name: string): Promise<IItem | undefined> {
-        try {
-            const searchResult: IItem | undefined = this.items.find((item: IItem) => item.name.toLowerCase().includes(name.toLowerCase()))
+    async getItemByName(name: string): Promise<ITarkovItem | undefined> 
+    {
+        const currentDate: Date = new Date()
 
-            if (searchResult) {
-                console.log("got here")
-                const updatedItemResult: any = await this.httpClient('api/v1/item', {
-                    searchParams: {
-                        uid: searchResult.uid
-                    }
-                })
+        if (!this.lastRefreshDate || (currentDate.getTime() - this.lastRefreshDate.getTime()) > 60000)
+        {
+            this.lastRefreshDate = currentDate
 
-                const itemResultBody: any = updatedItemResult.body
+            await this.refreshItemData()
+        }
+        
+        try 
+        {
+            const searchResult: ITarkovItem | undefined = this.items.find((item: ITarkovItem) => item.name.toLowerCase().includes(name.toLowerCase()))
 
-                searchResult.price = itemResultBody.price
-                searchResult.basePrice = itemResultBody.basePrice
-                searchResult.avg24hPrice = itemResultBody.avg24hPrice
-                searchResult.avg7daysPrice = itemResultBody.avg7daysPrice
-                searchResult.traderPrice = itemResultBody.traderPrice
-                searchResult.diff24h = itemResultBody.diff24h
-                searchResult.diff7days = itemResultBody.diff7days
-
+            if (searchResult) 
                 return searchResult
-            }
 
             return undefined
-        } catch(e) {
-
+        } 
+        catch(e) 
+        {
+            console.log(e) // handle error
         }
     }
 }

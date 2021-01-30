@@ -17,7 +17,7 @@ async function start() {
     //     tarkovMarket.getItemByName(ans)
     // }
 
-    const bot: Bot = new Bot()
+    const bot: Bot = new Bot(process.env.DISCORD_API_TOKEN)
 
     await bot.start()
 }

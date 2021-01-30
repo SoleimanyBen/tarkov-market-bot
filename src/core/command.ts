@@ -1,14 +1,30 @@
+import fs from 'fs'
+import path from 'path'
+
 import Message from "./message"
-import ICommand from "../interfaces/icommand";
 
 export default abstract class Command 
 {
-    private message: Message
+    private _name: string
+    private _description: string
+    private _command: string
 
-    constructor(message: Message)
+    constructor(name: string, description: string, command: string)
     {
-        this.message = message
+        this._name = name
+        this._description = description
+        this._command = command
     }
 
-    protected abstract async run(): Promise<void>
+    protected abstract start(message: Message): Promise<void>
+
+    public async run(message: Message): Promise<void>
+    {
+        await this.start(message)
+    }
+
+    public get Command(): string
+    {
+        return this._command
+    }
 }

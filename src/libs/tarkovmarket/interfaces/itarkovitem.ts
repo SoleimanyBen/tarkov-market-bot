@@ -1,6 +1,6 @@
 import IBSGItem from "./ibsgitem";
 
-export default interface IItem {
+export default interface ITarkovItem {
     uid: string
     bsgItem?: IBSGItem
     name: string

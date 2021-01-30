@@ -8,39 +8,63 @@ import Command from './command'
 
 export default class Bot
 {
-    private client: Client
-    private commands?: Command[]
+    private _client: Client
+    private _commands: Command[]
+    private _apiKey?: string
 
-    constructor(apiKey?: string) 
+    constructor(apiKey?: string | undefined) 
     {
-        this.client = new Client()
-
-        // this.client.login()
+        this._client = new Client()
+        this._commands = []
+        this._apiKey = apiKey
     }
 
     public async start(): Promise<void>
     {
+        await this.login()
         await this.handleEvents()
-        await this.handleCommands()
+        await this.loadCommands()
+    }
+
+    private async login(): Promise<void>
+    {
+        console.log(this._apiKey!)
+        await this._client.login(this._apiKey!)
     }
 
     private async handleEvents(): Promise<void> 
     {
-        // this.client.on('message', this.onMessage.bind(this))
+        this._client.on('message', this.onMessage.bind(this))
     }
 
-    private async handleCommands(): Promise<void> 
+    private async loadCommands(): Promise<void> 
     {
-        const modulesList: string[] = fs.readdirSync(path.join(__dirname, '../commands/'))
+        const commandPath: string = path.join(__dirname, '../commands/')
+        const commandData: string[] = fs.readdirSync(commandPath)
 
-        for (let moduleData in modulesList)
+        for (let commandName of commandData)
         {
+            const modulePath: string = path.join(commandPath, commandName)
 
+            const module: any = await (await import(modulePath)).default
+            const command: Command = new module()
+
+            this._commands.push(command)
         }
     }
 
     private onMessage(discordMessage: DiscordMessage): void
     {
-        const message: Message = new Message(discordMessage)
+        const message: Message = new Message(this, discordMessage)
+
+        if (message.IsCommand())
+        {
+            message.Command!.run(message)
+        }
+    }
+
+    public get Commands(): Command[]
+    {
+        return this._commands
     }
 }
