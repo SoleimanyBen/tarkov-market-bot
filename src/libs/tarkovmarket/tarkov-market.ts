@@ -7,7 +7,7 @@ import ITarkovItem from './interfaces/itarkovitem'
 export default class TarkovMarket {
     private static _instance?: TarkovMarket
 
-    private items: ITarkovItem[] = []
+    private _items: ITarkovItem[] = []
     private httpClient: Got
 
     public lastRefreshDate?: Date
@@ -30,35 +30,14 @@ export default class TarkovMarket {
 
     public async refreshItemData(): Promise<void> 
     {
-        try 
+        try
         {
             const rawBsgItems: any = await this.httpClient('api/v1/bsg/items/all')
             const rawMarketItems: any = await this.httpClient('api/v1/items/all')
 
-            rawMarketItems.body.forEach((data: any) => {
-                const item: ITarkovItem = {
-                    uid: data.uid,
-                    name: data.name,
-                    shortName: data.shortName,
-                    price: data.price,
-                    basePrice: data.basePrice,
-                    avg24hPrice: data.avg24hPrice,
-                    avg7daysPrice: data.avg7daysPrice,
-                    traderName: data.traderName,
-                    traderPrice: data.traderPrice,
-                    traderPriceCur: data.traderPriceCur,
-                    updated: data.updated,
-                    slots: data.slots,
-                    diff24h: data.diff24h,
-                    diff7days: data.diff7days,
-                    icon: data.icon,
-                    link: data.link,
-                    img: data.img,
-                    imgBig: data.imgBig,
-                    bsgId: data.bsgId,
-                    isFunctional: data.isFunctional
-                }
+            this._items = []
 
+            rawMarketItems.body.forEach((item: ITarkovItem) => {
                 const rawBsgItem: any = rawBsgItems.body[item.bsgId]
 
                 const bsgItem: IBSGItem = {
@@ -77,10 +56,8 @@ export default class TarkovMarket {
 
                 item.bsgItem = bsgItem
 
-                this.items.push(item)
+                this._items.push(item)
             })
-
-            console.log("Tarkov Items API Loaded")
         } 
         catch(e) 
         {
@@ -88,7 +65,7 @@ export default class TarkovMarket {
         }
     }
 
-    async getItemByName(name: string): Promise<ITarkovItem | undefined> 
+    private async refresh(): Promise<void>
     {
         const currentDate: Date = new Date()
 
@@ -98,10 +75,19 @@ export default class TarkovMarket {
 
             await this.refreshItemData()
         }
-        
+    }
+
+    public async getItemByName(searchResult: string[]): Promise<ITarkovItem[] | undefined> 
+    {
+        await this.refresh()
+
+        const searchPattern: string = searchResult.map((value: string) => {
+            return `(?=.*${value})`
+        }).join("")
+
         try 
         {
-            const searchResult: ITarkovItem | undefined = this.items.find((item: ITarkovItem) => item.name.toLowerCase().includes(name.toLowerCase()))
+            const searchResult: ITarkovItem[] | undefined = this._items.filter((item: ITarkovItem) => item.name.match(searchPattern))
 
             if (searchResult) 
                 return searchResult

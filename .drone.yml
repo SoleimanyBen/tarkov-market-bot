@@ -1,0 +1,44 @@
+---
+kind: pipeline
+type: kubernetes
+name: sovietbot-docker-pipeline
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: publish
+  image: plugins/docker
+  settings:
+    registry: registry.gitlab.com
+    repo: registry.gitlab.com/hyperbanks/sovietbot
+
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+
+    tags:
+      - "${DRONE_COMMIT_SHA:0:8}"
+      - latest
+
+  when:
+    branch:
+      - master
+    status:
+      - success
+
+---
+kind: secret
+name: docker_username
+get:
+  path: drone-docker
+  name: username
+
+---
+kind: secret
+name: docker_password
+get:
+  path: drone-docker
+  name: password

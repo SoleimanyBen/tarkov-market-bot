@@ -7,16 +7,6 @@ require('dotenv').config()
 
 
 async function start() {
-    // const tarkovMarket = new TarkovMarket()
-
-    // await tarkovMarket.getItemData()
-
-    // for (;;) {
-    //     const ans: any = await testEntry()
-
-    //     tarkovMarket.getItemByName(ans)
-    // }
-
     const bot: Bot = new Bot(process.env.DISCORD_API_TOKEN)
 
     await bot.start()

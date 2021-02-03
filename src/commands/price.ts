@@ -12,38 +12,40 @@ export default class Price extends Command
 
     constructor()
     {
-        super("Price", "Test Description", "price")
-
-        console.log("Price loaded")
+        super("Price", "Test Description", "p")
     }
     
     public async start(message: Message): Promise<void> 
     {
-        console.log(message.CommandInput!)
+        const items: ITarkovItem[] | undefined = await this._tarkovMarket.getItemByName(message.CommandInput!)
 
-        const item: ITarkovItem | undefined = await this._tarkovMarket.getItemByName(message.CommandInput!)
-
-        if (item)
+        if (items)
         {
-            const messageEmbed: MessageEmbed = new MessageEmbed()
-                .setTitle(`${item!.name}`)
-                .setDescription(item!.bsgItem!.description)
-                .setURL(item!.link)
-                .addFields(
-                    { name: 'Current Market Price', value: `₽ ${item!.price.toLocaleString()}`, inline: true },
-                    { name: 'Market Avg 24hr', value: `₽ ${item!.avg24hPrice.toLocaleString()}`, inline: true },
-                    { name: 'Market Avg 7d', value: `₽ ${item!.avg7daysPrice.toLocaleString()}`, inline: true },
-                    { name: '\u200B', value: '\u200B' },
-                    { name: 'Rarity', value: item!.bsgItem!.rarity, inline: true },
-                    { name: 'Spawn Chance', value: item!.bsgItem!.spawnChance, inline: true },
-                    { name: 'Quest Item', value: item!.bsgItem!.questItem, inline: true },
+            if (items.length != 1)
+            {
+                const messageEmbed: MessageEmbed = new MessageEmbed()
+                    .setTitle('Multiple results found, please refine search:')
+                    .setDescription(items.map((item: ITarkovItem) => {
+                        return `> ${item.name}`
+                    }))
 
-                )
-                .setThumbnail(item!.img)
-                .setFooter(`This information is accurate as of ${this._tarkovMarket.lastRefreshDate!.toUTCString()}`)
+                await message.DiscordMessage.channel.send(messageEmbed)
+            }
+            else
+            {
+                const messageEmbed: MessageEmbed = new MessageEmbed()
+                    .setTitle(`${items[0].name}`)
+                    .setURL(items[0].wikiLink)
+                    .addFields(
+                        { name: 'Market Price', value: `₽ ${items[0].price.toLocaleString()}`, inline: true },
+                        { name: 'Price Per Slot', value: `₽ ${items[0].price / items[0].slots} \n (${items[0].slots} Slot)`, inline: true },
+                        { name: 'Market Change', value: `(24 Hours) ₽ ${(items[0].price - items[0].avg24hPrice).toLocaleString()} \n (7 Days)   ₽ ${(items[0].price - items[0].avg7daysPrice).toLocaleString()}`, inline: true },
+                    )
+                    .setThumbnail(items[0].img)
+                    .setFooter(`Market prices last updated on: ${this._tarkovMarket.lastRefreshDate!.toLocaleString()}`)
 
-            message.DiscordMessage.channel.send(messageEmbed)
+                await message.DiscordMessage.channel.send(messageEmbed)
+            }
         }
-        
     }
 }

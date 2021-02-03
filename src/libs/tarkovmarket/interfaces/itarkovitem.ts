@@ -18,6 +18,7 @@ export default interface ITarkovItem {
     diff7days: number
     icon: string
     link: string
+    wikiLink: string
     img: string
     imgBig: string
     bsgId: string

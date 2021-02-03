@@ -1,4 +1,4 @@
-import { Message as DiscordMessage } from 'discord.js'
+import { Message as DiscordMessage, TextChannel } from 'discord.js'
 
 import Bot from './bot'
 import Command from './command'
@@ -8,7 +8,7 @@ export default class Message
     private _discordMessage: DiscordMessage
     private _messageContent: string
     private _command?: Command
-    private _commandInput?: string
+    private _commandInput?: string[] | undefined
     private _bot: Bot
 
     constructor(bot: Bot, discordMessage: DiscordMessage)
@@ -25,14 +25,17 @@ export default class Message
         if (this._messageContent.startsWith(process.env.DISCORD_BOT_PREFIX!))
         {
             const splitMessageContent: string[] = this._messageContent.split(' ')
-            const commandString: string = splitMessageContent[0].replace(process.env.DISCORD_BOT_PREFIX!, '')
+            const commandString: string | undefined = splitMessageContent.shift()!.replace(process.env.DISCORD_BOT_PREFIX!, '')
+
 
             const command: Command | undefined = this._bot.Commands.find((command: Command) => command.Command == commandString)
 
             if (command)
             {
                 this._command = command
-                this._commandInput = splitMessageContent[1]
+                this._commandInput = splitMessageContent
+
+                
             }
             else
             {
@@ -56,7 +59,7 @@ export default class Message
         return this._command
     }
 
-    public get CommandInput(): string | undefined
+    public get CommandInput(): string[] | undefined
     {
         return this._commandInput
     }
