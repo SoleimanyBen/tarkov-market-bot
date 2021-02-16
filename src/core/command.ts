@@ -1,4 +1,4 @@
-import { TextChannel } from 'discord.js'
+import { TextChannel, NewsChannel, DMChannel } from 'discord.js'
 import fs from 'fs'
 import path from 'path'
 
@@ -10,7 +10,7 @@ export default abstract class Command
     private _description: string
     private _command: string
 
-    private _allowedChannels: TextChannel[]
+    private _whitelistedChannels: (TextChannel | DMChannel | NewsChannel)[]
 
     constructor(name: string, description: string, command: string)
     {
@@ -18,7 +18,7 @@ export default abstract class Command
         this._description = description
         this._command = command
 
-        this._allowedChannels = []
+        this._whitelistedChannels = []
     }
 
     protected abstract start(message: Message): Promise<void>
@@ -27,10 +27,21 @@ export default abstract class Command
     {
         await this.start(message)
     }
-
-    public addListenChannel(channel: TextChannel)
+    
+    public addWhitelistedChannel(channel: TextChannel | NewsChannel | DMChannel): void
     {
-        this._allowedChannels.push(channel)
+        if (this._whitelistedChannels && !this._whitelistedChannels.includes(channel))
+        { 
+            this._whitelistedChannels.push(channel)
+        }
+    }
+
+    public removeWhitelistedChannel(channel: TextChannel | NewsChannel | DMChannel): void
+    {
+        if (this._whitelistedChannels && this._whitelistedChannels.includes(channel))
+        {
+            this._whitelistedChannels.splice(this._whitelistedChannels.indexOf(channel), 1)
+        }
     }
 
     public get Command(): string

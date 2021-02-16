@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import { Client, Message as DiscordMessage } from 'discord.js'
+import { Client, Message as DiscordMessage, TextChannel, VoiceChannel, NewsChannel, DMChannel } from 'discord.js'
 
 import Message from './message'
 import Command from './command'

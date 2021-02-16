@@ -1,11 +1,12 @@
-import Message from "../core/message"
 import Command from "../core/command";
+import Message from "../core/message";
 
-export default class Listen extends Command
+
+export default class Settings extends Command
 {
     constructor()
     {
-        super("Listen", "Listen description", "listen")
+        super("Settings", "Settings for bot", "listen")
     }
 
     public async start(message: Message): Promise<void>

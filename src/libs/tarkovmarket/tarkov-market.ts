@@ -51,7 +51,11 @@ export default class TarkovMarket {
                     maxStackSize: rawBsgItem['_props'].StackMaxSize,
                     rarity: rawBsgItem['_props'].Rarity,
                     spawnChance: rawBsgItem['_props'].SpawnChance,
-                    questItem: rawBsgItem['_props'].QuestItem
+                    questItem: rawBsgItem['_props'].QuestItem,
+                    itemType: rawBsgItem['_props'].ItemSound,
+                    mergesWithChildren: rawBsgItem['_props'].MergesWithChildren,
+                    ergonomics: rawBsgItem['_props'].Ergonomics,
+                    recoil: rawBsgItem['_props'].Recoil,
                 }
 
                 item.bsgItem = bsgItem
@@ -82,12 +86,12 @@ export default class TarkovMarket {
         await this.refresh()
 
         const searchPattern: string = searchResult.map((value: string) => {
-            return `(?=.*${value})`
+            return `(?=.*${value.toLowerCase()})`
         }).join("")
 
         try 
         {
-            const searchResult: ITarkovItem[] | undefined = this._items.filter((item: ITarkovItem) => item.name.match(searchPattern))
+            const searchResult: ITarkovItem[] | undefined = this._items.filter((item: ITarkovItem) => item.name.toLowerCase().match(searchPattern))
 
             if (searchResult) 
                 return searchResult

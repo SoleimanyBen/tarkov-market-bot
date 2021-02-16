@@ -9,5 +9,9 @@ export default interface IBSGItem {
     maxStackSize: number
     rarity: string
     spawnChance: number
+    itemType: string
     questItem: boolean
+    mergesWithChildren: boolean
+    recoil?: number
+    ergonomics?: number
 }
