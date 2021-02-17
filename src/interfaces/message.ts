@@ -1,4 +1,4 @@
 import { Message as DiscordMessage } from 'discord.js'
 
-export default interface IMessage {
+export default interface Message {
 }

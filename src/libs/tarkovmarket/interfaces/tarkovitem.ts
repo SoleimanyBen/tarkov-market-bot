@@ -1,6 +1,6 @@
-import IBSGItem from "./ibsgitem";
+import IBSGItem from "./bsgitem";
 
-export default interface ITarkovItem {
+export default interface TarkovItem {
     uid: string
     bsgItem?: IBSGItem
     name: string

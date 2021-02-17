@@ -1,6 +1,6 @@
 import { Message } from 'discord.js'
 
-export default interface IBot {
+export default interface Bot {
 
     start(): void
 }

@@ -3,7 +3,7 @@ import { MessageEmbed } from 'discord.js'
 import Command from "../core/command";
 import Message from "../core/message";
 
-import ITarkovItem from "../libs/tarkovmarket/interfaces/itarkovitem";
+import TarkovItem from "../libs/tarkovmarket/interfaces/tarkovitem";
 import TarkovMarket from "../libs/tarkovmarket/tarkov-market";
 
 export default class Price extends Command
@@ -17,7 +17,7 @@ export default class Price extends Command
     
     public async start(message: Message): Promise<void> 
     {
-        const items: ITarkovItem[] | undefined = await this._tarkovMarket.getItemByName(message.CommandInput!)
+        const items: TarkovItem[] | undefined = await this._tarkovMarket.getItemByName(message.CommandInput!)
 
         if (items)
         {
@@ -25,7 +25,7 @@ export default class Price extends Command
             {
                 const messageEmbed: MessageEmbed = new MessageEmbed()
                     .setTitle('Multiple results found, please refine search:')
-                    .setDescription(items.map((item: ITarkovItem) => {
+                    .setDescription(items.map((item: TarkovItem) => {
                         return `> ${item.name}`
                     }))
 

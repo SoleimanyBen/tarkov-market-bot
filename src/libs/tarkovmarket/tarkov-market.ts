@@ -1,13 +1,13 @@
 import got, { Got } from 'got'
 import { isIterationStatement } from 'typescript'
 
-import IBSGItem from './interfaces/ibsgitem'
-import ITarkovItem from './interfaces/itarkovitem'
+import BSGItem from './interfaces/bsgitem'
+import TarkovItem from './interfaces/tarkovitem'
 
 export default class TarkovMarket {
     private static _instance?: TarkovMarket
 
-    private _items: ITarkovItem[] = []
+    private _items: TarkovItem[] = []
     private httpClient: Got
 
     public lastRefreshDate?: Date
@@ -37,10 +37,10 @@ export default class TarkovMarket {
 
             this._items = []
 
-            rawMarketItems.body.forEach((item: ITarkovItem) => {
+            rawMarketItems.body.forEach((item: TarkovItem) => {
                 const rawBsgItem: any = rawBsgItems.body[item.bsgId]
 
-                const bsgItem: IBSGItem = {
+                const bsgItem: BSGItem = {
                     id: rawBsgItem['_id'],
                     name: rawBsgItem['_props'].Name,
                     shortName: rawBsgItem['_props'].ShortName,
@@ -81,7 +81,7 @@ export default class TarkovMarket {
         }
     }
 
-    public async getItemByName(searchResult: string[]): Promise<ITarkovItem[] | undefined> 
+    public async getItemByName(searchResult: string[]): Promise<TarkovItem[] | undefined> 
     {
         await this.refresh()
 
@@ -91,7 +91,7 @@ export default class TarkovMarket {
 
         try 
         {
-            const searchResult: ITarkovItem[] | undefined = this._items.filter((item: ITarkovItem) => item.name.toLowerCase().match(searchPattern))
+            const searchResult: TarkovItem[] | undefined = this._items.filter((item: TarkovItem) => item.name.toLowerCase().match(searchPattern))
 
             if (searchResult) 
                 return searchResult

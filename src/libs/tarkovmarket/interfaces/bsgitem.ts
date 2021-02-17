@@ -1,4 +1,4 @@
-export default interface IBSGItem {
+export default interface BSGItem {
     id: string
     name: string
     shortName: string
