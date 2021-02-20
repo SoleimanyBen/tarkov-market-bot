@@ -4,19 +4,21 @@ import path from 'path'
 
 import Message from "./message"
 
+import { CommandOptions } from '../interfaces/'
+
 export default abstract class Command 
 {
-    private _name: string
+    private _title: string
     private _description: string
     private _command: string
 
     private _whitelistedChannels: (TextChannel | DMChannel | NewsChannel)[]
 
-    constructor(name: string, description: string, command: string)
+    constructor(commandOptions: CommandOptions)
     {
-        this._name = name
-        this._description = description
-        this._command = command
+        this._title = commandOptions.title
+        this._description = commandOptions.description
+        this._command = commandOptions.command
 
         this._whitelistedChannels = []
     }

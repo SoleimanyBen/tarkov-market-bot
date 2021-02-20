@@ -1,3 +1,5 @@
+import { ItemType } from '../enums/itemtype'
+
 export default interface BSGItem {
     id: string
     name: string

@@ -81,7 +81,7 @@ export default class TarkovMarket {
         }
     }
 
-    public async getItemByName(searchResult: string[]): Promise<TarkovItem[] | undefined> 
+    public async getItemByName(searchResult: string[]): Promise<TarkovItem[]> 
     {
         await this.refresh()
 
@@ -89,18 +89,6 @@ export default class TarkovMarket {
             return `(?=.*${value.toLowerCase()})`
         }).join("")
 
-        try 
-        {
-            const searchResult: TarkovItem[] | undefined = this._items.filter((item: TarkovItem) => item.name.toLowerCase().match(searchPattern))
-
-            if (searchResult) 
-                return searchResult
-
-            return undefined
-        } 
-        catch(e) 
-        {
-            console.log(e) // handle error
-        }
+        return this._items.filter((item: TarkovItem) => item.name.toLowerCase().match(searchPattern))
     }
 }
